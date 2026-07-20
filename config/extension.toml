@@ -1,0 +1,48 @@
+# Extension configuration file.
+# Visit the "Extension configuration file (extension.toml)" section for more details:
+# https://docs.omniverse.nvidia.com/kit/docs/kit-manual/latest/guide/extensions_advanced.html
+#
+
+[core]
+reloadable = true
+order = 0
+
+[package]
+version = "0.1.0"
+category = "simulation"
+title = "SimYard Scenario"
+description = "Declarative scenarios for NVIDIA Isaac Sim: scene, robots, sensors, randomization, RL and CI."
+authors = ["Alexander Kalmykov <alex.kalm.dev@gmail.com>","Po-Jen Wang <pw.pjwang@gmail.com>"]
+repository = "https://github.com/SimYard/simyard.scenario.configurator"
+keywords = ["isaac sim","isaacsim","omniverse","usd","robotics","simulation","scenario","domain randomization","reinforcement learning","sim2real"]
+changelog = "docs/CHANGELOG.md"
+readme = "docs/README.md"
+preview_image = "data/preview.png"
+icon = "data/icon.png"
+
+[dependencies]
+"omni.graph" = {}
+"omni.graph.tools" = {}
+"omni.kit.uiapp" = {}
+
+# define the Python module that the extension provides
+[[python.module]]
+name = "simyard.scenario.configurator"
+
+# define the Python module for tests
+[[python.module]]
+name = "simyard.scenario.configurator.tests"
+
+[settings]
+exts."simyard.scenario.configurator".timeout = 5
+
+# disable startup test
+[[test]]
+name = "startup"
+enabled = false
+
+[[test]]
+enabled = true
+dependencies = [
+    "omni.kit.test",
+]
