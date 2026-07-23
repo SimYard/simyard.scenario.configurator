@@ -122,7 +122,8 @@ class UIBuilder:
             unresolved = report.get("unknown_rendering_keys", []) + report.get("unhandled_physics_keys", [])
             if unresolved:
                 carb.log_warn(f"SimWarden UI: unresolved keys: {unresolved}")
-                self._notify(f"Applied {name} — {len(unresolved)} unknown key(s): {', '.join(unresolved)}", warn=True)
+                joined = ", ".join(unresolved)
+                self._notify(f"Applied {name} — {len(unresolved)} unresolved key(s): {joined}", warn=True)
             else:
                 self._notify(f"Applied {name}")
             carb.log_info(f"SimWarden applied config: {path}")

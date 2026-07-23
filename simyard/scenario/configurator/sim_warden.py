@@ -27,8 +27,8 @@ The warden reads a configuration with two optional sections and applies each to
 the running simulation:
 
 * ``rendering`` - key/value pairs written to ``carb.settings`` (RTX / renderer).
-* ``physics``   - dispatched across the high-level ``PhysicsContext``, the USD
-  ``PhysicsScene`` prim and the PhysX ``PhysxSceneAPI``.
+* ``physics``   - dispatched across the high-level ``PhysicsContext``, the
+  ``UsdPhysics.Scene`` prim (or older ``PhysicsScene``) and the PhysX ``PhysxSceneAPI``.
 
 Typical use from a standalone launch script::
 
@@ -112,7 +112,7 @@ def _convert_value(value: Any) -> Any:
     return value
 
 
-def apply_config(config: dict[str, Any], world: Any = None) -> None:
+def apply_config(config: dict[str, Any], world: Any = None) -> dict[str, list[str]]:
     """Apply a physics/rendering config in one call.
 
     Convenience wrapper around ``SimWarden(config).apply(world)``.
@@ -120,8 +120,11 @@ def apply_config(config: dict[str, Any], world: Any = None) -> None:
     Args:
         config: Configuration dictionary with ``physics`` and/or ``rendering`` sections.
         world: Optional Isaac Sim ``World`` used to resolve the physics context and stage.
+
+    Returns:
+        The report returned by :meth:`SimWarden.apply`.
     """
-    SimWarden(config).apply(world)
+    return SimWarden(config).apply(world)
 
 
 class SimWarden:
@@ -151,7 +154,7 @@ class SimWarden:
 
         Raises:
             FileNotFoundError: If the file does not exist.
-            ValueError: If the file extension is not supported.
+            ValueError: If the file extension is unsupported or the config root is not a mapping.
         """
         path = Path(config_path)
         if not path.is_file():
@@ -162,11 +165,16 @@ class SimWarden:
         if suffix in (".yaml", ".yml"):
             import yaml
 
-            config = yaml.safe_load(text) or {}
+            config = yaml.safe_load(text)
         elif suffix == ".json":
             config = json.loads(text)
         else:
             raise ValueError(f"Unsupported config format '{suffix}' (expected .yaml, .yml or .json)")
+
+        if config is None:
+            config = {}
+        if not isinstance(config, dict):
+            raise ValueError(f"Config root must be a mapping, got {type(config).__name__}")
 
         return cls(config, world)
 

@@ -34,7 +34,7 @@ class Extension(omni.ext.IExt):
         """Method called when the extension is loaded/enabled"""
         carb.log_info(f"on_startup {ext_id}")
 
-        # UI handler: adds the File > Open Config menu entry
+        # UI handler: adds the Tools > SimYard > Open Config menu entry
         self.ui_builder = UIBuilder()
 
     def on_shutdown(self):

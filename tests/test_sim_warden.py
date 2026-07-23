@@ -81,6 +81,17 @@ class TestFromFile(unittest.TestCase):
             with self.assertRaises(ValueError):
                 SimWarden.from_file(path)
 
+    def test_non_mapping_root_raises(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = _write(Path(d), "c.json", json.dumps([1, 2, 3]))
+            with self.assertRaises(ValueError):
+                SimWarden.from_file(path)
+
+    def test_empty_document_is_empty_config(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = _write(Path(d), "c.yaml", "")
+            self.assertEqual(SimWarden.from_file(path)._config, {})
+
 
 class TestSection(unittest.TestCase):
     def test_physics_section(self):
