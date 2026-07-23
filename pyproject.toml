@@ -1,0 +1,16 @@
+# Tooling configuration for the SimYard Scenario Configurator extension.
+# Kit metadata lives in config/extension.toml; this file configures ruff (lint + format)
+# used by local development and CI.
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+# Generated OmniGraph node stubs are not maintained by hand.
+extend-exclude = ["**/ogn/**"]
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# __init__.py files re-export submodules for discovery.
+"**/__init__.py" = ["F401", "F403"]

@@ -34,6 +34,7 @@ from pathlib import Path
 import carb
 import omni.kit.actions.core
 import omni.kit.menu.utils as menu_utils
+
 from simyard.scenario.configurator.sim_warden import SimWarden
 
 #: Config shipped with the extension, used as the default selection.
