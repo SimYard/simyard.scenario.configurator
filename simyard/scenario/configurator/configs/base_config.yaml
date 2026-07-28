@@ -16,16 +16,14 @@
 #   physx.<Attr>      -> PhysxSchema.PhysxSceneAPI.Get/Create<Attr>Attr
 physics:
   gravity: -9.81            # PhysicsContext.set_gravity, m/s^2 (negative = down)
-  physics_dt: 0.016666666   # PhysicsContext.set_physics_dt, seconds (1/60). Keep <= 1/60: Isaac derives
-                            # integer steps/sec as int(1/dt), so 0.0166667 truncates to 59 fps, not 60.
-  solver_type: "TGS"        # "TGS" (default, stable) or "PGS"
+  solver_type: "PGS"        # "TGS" (default, stable) or "PGS"
   broadphase_type: "MBP"    # "MBP", "SAP" or "GPU"
   enable_ccd: false         # continuous collision detection (costlier, avoids tunneling)
   enable_stabilization: true
   enable_gpu_dynamics: false
 
   # --- Fine-grained overrides (authored on the USD/PhysX scene prim) --
-  physx.TimeStepsPerSecond: 70   # PhysxSceneAPI.TimeStepsPerSecond
+  physx.TimeStepsPerSecond: 70   # physics rate in steps/sec (= 1/physics_dt) - the single source of the sim timestep
   physx.EnableGPUDynamics: false
   usd.GravityMagnitude: 1.62     # UsdPhysics.Scene.GravityMagnitude (overrides the magnitude above)
 
