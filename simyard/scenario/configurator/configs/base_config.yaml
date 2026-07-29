@@ -1,0 +1,53 @@
+# Base simulation configuration for SimWarden.
+#
+# Only two sections are consumed by the warden:
+#   * physics    - applied to PhysicsContext / UsdPhysics.Scene / PhysxSchema.PhysxSceneAPI
+#   * rendering  - applied to carb.settings (RTX / renderer options)
+#
+# Any other section is ignored, so this file can live next to a richer scene config.
+
+# =====================================================================
+# Physics
+# =====================================================================
+# Bare keys are dispatched to PhysicsContext methods (set_<key> or <key>).
+# Prefixed keys target a specific API for fine-grained control:
+#   context.<method>  -> PhysicsContext.<set_method>
+#   usd.<Attr>        -> UsdPhysics.Scene.Get/Create<Attr>Attr
+#   physx.<Attr>      -> PhysxSchema.PhysxSceneAPI.Get/Create<Attr>Attr
+physics:
+  gravity: -9.81            # PhysicsContext.set_gravity, m/s^2 (negative = down)
+  solver_type: "PGS"        # "TGS" (default, stable) or "PGS"
+  broadphase_type: "MBP"    # "MBP", "SAP" or "GPU"
+  enable_ccd: false         # continuous collision detection (costlier, avoids tunneling)
+  enable_stabilization: true
+  enable_gpu_dynamics: false
+
+  # --- Fine-grained overrides (authored on the USD/PhysX scene prim) --
+  physx.TimeStepsPerSecond: 70   # physics rate in steps/sec (= 1/physics_dt) - the single source of the sim timestep
+  physx.EnableGPUDynamics: false
+  usd.GravityMagnitude: 1.62     # UsdPhysics.Scene.GravityMagnitude (overrides the magnitude above)
+
+# =====================================================================
+# Rendering (carb.settings)
+# =====================================================================
+# Comments note whether a value changes the Isaac 6.0.1 default (verified live)
+# or just restates it. Keys that only restate the default are kept for clarity.
+rendering:
+  # Render mode: "RealTimePathTracing" (default) | "PathTracing" (offline).
+  "/rtx/rendermode": "RealTimePathTracing"
+
+  # --- DLSS ----------------------------------------------------------
+  "/rtx/post/aa/op": 3                    # AA op: 0=Off 1=TAA 2=FXAA 3=DLSS 4=DLAA (3/DLSS is the default)
+  "/rtx/post/dlss/execMode": 1            # DLSS mode: 0=Performance 1=Balanced 2=Quality 3=Auto  (default 0)
+  "/rtx-transient/dlssg/enabled": true    # FPS Multiplier (DLSS Frame Generation); off by default
+
+  # --- Lighting effects ----------------------------------------------
+  "/rtx/reflections/enabled": true
+  "/rtx/indirectDiffuse/enabled": true
+  "/rtx/directLighting/sampledLighting/enabled": true
+  "/rtx/ambientOcclusion/enabled": false  # off (default is on)
+
+  # --- Path tracing (RealTimePathTracing / PathTracing) --------------
+  "/rtx/pathtracing/spp": 1               # samples per pixel per frame (default 64)
+  "/rtx/pathtracing/totalSpp": 64         # accumulation target
+  "/rtx/pathtracing/maxBounces": 4        # max bounces (default 3)
