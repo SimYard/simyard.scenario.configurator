@@ -1,0 +1,10 @@
+#usda 1.0
+(
+    defaultPrim = "Cube"
+)
+
+def Cube "Cube"
+{
+    double size = 1
+}
+

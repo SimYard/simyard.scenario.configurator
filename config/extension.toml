@@ -24,6 +24,8 @@ icon = "data/icon.png"
 "omni.graph" = {}
 "omni.graph.tools" = {}
 "omni.kit.uiapp" = {}
+"omni.replicator.core" = {}
+"omni.usd" = {}
 
 # define the Python module that the extension provides
 [[python.module]]
@@ -45,4 +47,8 @@ enabled = false
 enabled = true
 dependencies = [
     "omni.kit.test",
+]
+args = [
+    # Required by omni.syntheticdata, which omni.replicator.core pulls in.
+    "--/app/settings/fabricDefaultStageFrameHistoryCount=3",
 ]

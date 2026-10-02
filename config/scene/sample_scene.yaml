@@ -1,0 +1,71 @@
+# Sample asset-spawning configuration for SimYard Scenario Configurator.
+# Describes which USD assets to load, how many instances of each to spawn,
+# and how to place and randomize them. Randomization is a thin declarative layer
+# over Omniverse Replicator (omni.replicator.core): keys below use Replicator's own
+# function and argument names, so its API docs apply directly.
+# Scene- and environment-level settings (lighting, ground plane, physics world,
+# etc.) live in a separate config file.
+
+assets:
+  - name: "cube"
+    # Same meaning as the `usd` argument of rep.create.from_usd.
+    usd: "assets/shapes/cube.usda"
+    # Where in the USD stage this asset's instances get parented. Every instance is
+    # spawned as `<prim_path>/instance_<id>`.
+    prim_path: "/World/Shapes/cube"
+    # Replicator semantic `[type, value]` pairs (as in rep.create.from_usd / rep.modify.semantics),
+    # read by Replicator annotators such as semantic segmentation and bounding boxes.
+    semantics:
+      - ["class", "cube"]
+    # Named USD variant selections to apply on load, if the asset defines variant sets.
+    variants: {}
+    # Static instances with a fixed pose. `pose` takes the same keys as rep.modify.pose
+    # (position, rotation in degrees with XYZ order, scale as a scalar or [x, y, z]).
+    # Instances get ids 0..N-1 by list position, whether enabled or not, so toggling
+    # one never renames the others.
+    instances:
+      - enabled: true
+        pose:
+          position: [0.0, 0.0, 0.0]
+          rotation: [0.0, 0.0, 0.0]
+          scale: [1.0, 1.0, 1.0]
+      - enabled: true
+        pose:
+          position: [2.0, 0.0, 0.0]
+          rotation: [0.0, 0.0, 0.0]
+          scale: [1.0, 1.0, 1.0]
+    # Each enabled randomizer spawns `count` more instances (ids continue after
+    # `instances`) and groups them with rep.create.group. Under its trigger, it applies
+    # every op in `randomize` to the group:
+    #   trigger:   one rep.trigger.<name> with its kwargs, e.g. on_frame, on_time, on_custom_event.
+    #   randomize: a list of rep.modify.* / rep.randomizer.* calls, keyed `modify.pose`,
+    #              `randomizer.scatter_2d`, ... with their kwargs.
+    # Any argument value given as `{distribution.<name>: {kwargs}}` becomes
+    # rep.distribution.<name>(**kwargs) (uniform, normal, choice, sequence, log_uniform, ...).
+    # Distributions sample per prim, so every instance in the group gets its own value.
+    # Replicator ignores `seed: 0`; leave `seed` unset to use the global Replicator seed.
+    randomizers:
+      - enabled: true
+        count: 2
+        trigger:
+          on_frame:
+            max_execs: 1
+        randomize:
+          - modify.pose:
+              position:
+                distribution.uniform: {lower: [-3.0, -3.0, 0.0], upper: [3.0, 3.0, 0.0], seed: 1}
+              rotation:
+                distribution.uniform: {lower: [0.0, 0.0, 0.0], upper: [0.0, 0.0, 360.0], seed: 2}
+              scale:
+                distribution.uniform: {lower: 0.5, upper: 1.5, seed: 3}
+      - enabled: false
+        count: 3
+        trigger:
+          on_frame:
+            interval: 1
+        randomize:
+          - modify.pose:
+              position:
+                distribution.uniform: {lower: [5.0, -1.0, 0.0], upper: [10.0, 1.0, 0.0]}
+              scale:
+                distribution.normal: {mean: 1.0, std: 0.1}

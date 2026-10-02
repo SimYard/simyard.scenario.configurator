@@ -23,3 +23,4 @@
 
 from .test_extension import *
 from .test_omnigraph_extension import *
+from .test_spawn_assets import *
